@@ -1,2 +1,3 @@
 GDOU Gym Management System
-//rush B£¡£¡£¡
+rush B£¡£¡£¡
+
