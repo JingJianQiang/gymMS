@@ -1,1 +1,1 @@
-广东海洋大学体育馆管理系统
+GDOU Gym Management System
