@@ -1,3 +1,1 @@
-�㶫�����ѧ����ݹ���ϵͳ
-//��������  - -@
-GDOU Gym Management System
+﻿GDOU Gym Management System
