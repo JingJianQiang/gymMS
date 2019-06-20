@@ -1,3 +1,18 @@
 GDOU Gym Management System
-rush B£¡£¡£¡
 
+Folder structure
+
+gymMS
+       |---src
+              |---main
+                       |---java
+                       |---resources
+                       |---webapp
+                                 |---WEB-INF
+                                           |---jsp
+              |---test
+                       |---java
+                       |---resources
+       |---target
+       |---pom.xml
+       |---readme.txt
