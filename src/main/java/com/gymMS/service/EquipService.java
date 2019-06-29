@@ -19,6 +19,9 @@ public interface EquipService {
 	List<EquipType> euqipTypeQueryAll();
 	
 	ArrayList<Integer> equipUpdateStateByID(ArrayList<Integer> ids , Boolean state);
+	void equipUpdate(Equip equip); 
 	
 	void equipDeleteByID(int equipID);
+	
+	void equipInsert(String type , int price);
 }

@@ -61,6 +61,26 @@ pageEncoding="UTF-8"%>
 					}
 					})//ajax  
 				},
+				update : function(el){
+					$.ajax({
+					type:"post",
+					url:"/equip/update",
+					data:JSON.stringify({
+						equipID : el.id,
+						equipType : el.type,
+						equipPrice : el.price,
+						euqipState : el.isSelect
+						}),
+					contentType: 'application/json;charset=utf-8',
+					success : function(){
+						},
+					error:function( jqXHR, textStatus, errorThrown ){
+						console.log( jqXHR );
+						console.log( textStatus );
+						console.log( errorThrown );
+					}
+					})//ajax
+				},
 			//查询 查询之后的currentEquipshowing = totalEquip
 			query : function(){
 				$.ajax({
@@ -270,11 +290,12 @@ pageEncoding="UTF-8"%>
 			}
 			window.onload = onLoad();
 			
+				
 
 			//点击查询时判断查询方式
 			$("#queryBtn").click(function(){
 				dataSpace.typeSelect = $('#usertype').selectpicker('val');				
-				if(dataSpace.typeSelect != null){
+				if(dataSpace.typeSelect != null){	
 					dataSpace.queryByType();
 					}
 				else {
@@ -322,12 +343,12 @@ pageEncoding="UTF-8"%>
 	        	 $('#equipID').val("");
 		        })
 			 $("#equipID").blur('leave', function (event) {
-	            let equipID = $('#equipID').val();
-                if(/^[0-9]+$/.test( equipID )){
+	            let equipID = $('#equipID').val();//获取id框输入
+                if(/^[0-9]+$/.test( equipID )){//有输入且为数字时查出本地数据中id匹配的
                 	regaxpID(equipID);    
                 	$('#equipID').val("查询中");
                 }	
-                else{
+                else{//没输入或输入不为数字时 显示当前条件的全部
                 	dataSpace.currentEquipshowing = dataSpace.currentTotalEquip;
                 	refreshPage();
                 	$('#equipID').val("器材ID");
@@ -335,12 +356,13 @@ pageEncoding="UTF-8"%>
 	        }); 
 	        $("#addBtn").click(function(){
 				console.log("点击了添加")
+				window.open("./adder","_blank - URL","toolbar=yes, location=yes, directories=no, status=no, menubar=yes, scrollbars=yes, resizable=no, copyhistory=yes, width=400, height=400","true"); 
 			});
 
 
-	        $(function remove(el){
+	       /*  $(function remove(el){
 				console.log("name"+el.name);
-			})
+			}) */
 		})
 		</script>
 		
@@ -388,11 +410,14 @@ pageEncoding="UTF-8"%>
 				<tbody>	
 					<tr ms-for="(index,data) in @dataList">
 						<td>{{index}}</td>
-						<td><input type="text" ms-duplex = data.id></td>
-						<td>{{data.type}}</td>
-						<td>{{data.price}}<td>
+						<td>{{data.id}}</td>
+						
+						<td>
+						<input type="text" class="form-control" id="exampleInput1" ms-duplex = data.type /> 
+						</td>
+						<td><input type="text" class="form-control" id="exampleInput2" ms-duplex = data.price /></td>
 						<td><input type = "checkbox" ms-duplex-checked="data.isSelect"  data-duplex-changed="@select" ></td>
-						<td><a href="javascript:void(0)" ms-click="@remove(data)">修改</a></td>
+						<td><a href="javascript:void(0)" ms-click="@update(data)">修改</a></td>
 						<td><a href="javascript:void(0)" ms-click="@remove(data)">删除</a></td>
 					</tr>
 					<tr>

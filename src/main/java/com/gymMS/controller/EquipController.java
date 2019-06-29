@@ -25,6 +25,10 @@ public class EquipController {
     public String equipmentManager(ModelMap model) {
 		return "EquipmentManager";
     }
+	@RequestMapping("/adder")
+	public String equipmentAdder() {
+		return "EquipAdd";
+	}
 	
 	@Autowired
 	private EquipService equipService;
@@ -78,6 +82,16 @@ public class EquipController {
 			return equipService.equipUpdateStateByID(selectList, true);
 		}
 		
+		@RequestMapping(value = "/update",method = RequestMethod.POST)
+		@ResponseBody
+		public void equipUpdateByID(@RequestBody Map<String,Object> data) {
+			Equip equip = new Equip();
+			equip.setId(Integer.valueOf(data.get("equipID").toString()));
+			equip.setType(data.get("equipType").toString());
+			equip.setPrice(Integer.valueOf(data.get("equipPrice").toString()));
+			equip.setIsSelect((Boolean)data.get("equipState"));
+			equipService.equipUpdate(equip);
+		}
 //		@RequestMapping(value = "/update", method = RequestMethod.GET)
 //		@ResponseBody
 //		public Boolean equipStateChange( ) {	
@@ -101,6 +115,15 @@ public class EquipController {
 		 equipService.equipDeleteByID(equipID);
 	 }
 	 
+	 //insert
+	 //添加器材
+	 @RequestMapping(value = "/insert")
+	 @ResponseBody
+	 public void equipInsert( @RequestBody Map<String,Object> data) {
+		 String type = data.get("equipType").toString();
+		 int price = (Integer.valueOf(data.get("equipPrice").toString()));
+		 equipService.equipInsert(type, price);
+	 }
 	 
 }
 

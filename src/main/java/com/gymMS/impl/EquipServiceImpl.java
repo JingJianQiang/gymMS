@@ -54,7 +54,7 @@ public class EquipServiceImpl implements EquipService {
 	}
 	
 	//update
-	//根据ID系修改状态
+	//根据ID系修改state
 	public ArrayList<Integer> equipUpdateStateByID(ArrayList<Integer> ids , Boolean state) {
 		ArrayList<Integer> results = new ArrayList<Integer>();
 		for(int i = 0; i < ids.size(); i++) {//检测此时是否被别人选中
@@ -68,10 +68,18 @@ public class EquipServiceImpl implements EquipService {
 		}
 		return results;
 	}
+	public void equipUpdate(Equip equip) {
+		equipDao.equipUpdate(equip.getType(), equip.getPrice(), equip.getId());
+	}
 	
 	//delete
 	//根据ID删除器材
 	public void equipDeleteByID(int id) {
 		equipDao.equipDeleteByID(id);
+	}
+	
+	//insert
+	public void equipInsert(String type , int price) {
+		equipDao.equipInsert(type, price);
 	}
 }

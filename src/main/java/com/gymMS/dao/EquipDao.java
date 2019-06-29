@@ -5,6 +5,7 @@ import com.gymMS.domain.EquipType;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
@@ -75,9 +76,17 @@ public interface EquipDao {
 	@Update("update equip set EquipState = #{setState} where EquipID like #{equipID}")
 	void equipUpdateStateByID(@Param("equipID") int id , @Param("setState") Boolean state );
 	
+	@Update("update equip set EquipType = #{type} , EquipPrice = #{price} where EquipID = #{id}")
+	void equipUpdate(@Param("type") String type , @Param("price") int price ,@Param("id") int id);
 	/**
 	 * 以下为删除操作
 	 */
 	@Delete("delete from equip where EquipID like #{equipID}")
 	void equipDeleteByID(@Param("equipID") int euqipid);
+	
+	/**
+	 * 以下为插入操作
+	 */
+	@Insert("insert into equip (EquipType,EquipPrice) values (#{equipType} , #{equipPrice})")
+	void equipInsert(@Param("equipType") String type , @Param("equipPrice") int price);
 }
