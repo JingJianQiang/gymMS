@@ -68,4 +68,10 @@ public class EquipServiceImpl implements EquipService {
 		}
 		return results;
 	}
+	
+	//delete
+	//根据ID删除器材
+	public void equipDeleteByID(int id) {
+		equipDao.equipDeleteByID(id);
+	}
 }

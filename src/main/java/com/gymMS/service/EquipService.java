@@ -19,4 +19,6 @@ public interface EquipService {
 	List<EquipType> euqipTypeQueryAll();
 	
 	ArrayList<Integer> equipUpdateStateByID(ArrayList<Integer> ids , Boolean state);
+	
+	void equipDeleteByID(int equipID);
 }

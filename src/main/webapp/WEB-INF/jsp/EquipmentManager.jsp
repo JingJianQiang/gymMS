@@ -32,6 +32,35 @@ pageEncoding="UTF-8"%>
 			currentEquipshowing :{},//将要画出来的全部
 			usefulEquip : {},//存放未被选中的器材
 			typeSelect :[],
+			remove : function(el){
+/* 				console.log(el.type);	
+				dataSpace.dataList.remove(el);
+				dataSpace.totalEquip.remove(el);
+				dataSpace.currentEquipshowing.remove(el);
+				dataSpace.usefulEquip.remove(el); 	
+				refreshPage();*/
+				 $.ajax({
+					type:"post",
+					url:"/equip/delete/id",
+					data:JSON.stringify({
+						equipID : el.id
+						}),
+				    contentType: 'application/json;charset=utf-8',
+					success : function(data){
+						//所有本地容器删除此条目
+							dataSpace.dataList.remove(el);
+							dataSpace.totalEquip.remove(el);
+							dataSpace.currentEquipshowing.remove(el);
+							dataSpace.usefulEquip.remove(el);
+							refreshPage();
+						},
+					error:function( jqXHR, textStatus, errorThrown ){
+						console.log( jqXHR );
+						console.log( textStatus );
+						console.log( errorThrown );
+					}
+					})//ajax  
+				},
 			//查询 查询之后的currentEquipshowing = totalEquip
 			query : function(){
 				$.ajax({
@@ -42,7 +71,7 @@ pageEncoding="UTF-8"%>
 						dataSpace.currentEquipshowing = dataSpace.totalEquip;
 						dataSpace.currentTotalEquip = dataSpace.totalEquip;
 						equipClassify();
-						pageUp();
+						refreshPage();
 					},
 					error:function( jqXHR, textStatus, errorThrown ){
 						console.log( jqXHR );
@@ -65,7 +94,7 @@ pageEncoding="UTF-8"%>
 						dataSpace.currentEquipshowing = dataSpace.totalEquip;
 						dataSpace.currentTotalEquip = dataSpace.totalEquip;
 						equipClassify();
-						pageUp();
+						refreshPage();
 					},
 					error:function( jqXHR, textStatus, errorThrown ){
 						console.log( jqXHR );
@@ -89,7 +118,7 @@ pageEncoding="UTF-8"%>
 					dataSpace.currentEquipshowing = dataSpace.totalEquip;
 					dataSpace.currentTotalEquip = dataSpace.totalEquip;
 					equipClassify();
-					pageUp();
+					refreshPage();
 				},
 				error:function( jqXHR, textStatus, errorThrown ){
 					console.log( jqXHR );
@@ -178,34 +207,24 @@ pageEncoding="UTF-8"%>
 		var pageIndex = 0;	
 		var pageScale = 5;
 
-		//下一页
-		function pageDown(){
-			let pageMax = Math.ceil(dataSpace.currentEquipshowing.length / pageScale);
-			if( pageIndex < pageMax-1){
-				pageIndex ++;	
+//		刷新页面操作	
+		function refreshPage(operator){
+			if(operator == "down"){//下一页
+				let pageMax = Math.ceil(dataSpace.currentEquipshowing.length / pageScale);
+				if( pageIndex < pageMax-1){
+					pageIndex ++;	
+				}
+			}
+			if(operator == "up"){//上一页
+				if(pageIndex > 0 ){
+					pageIndex --;
+				}
 			}
 			let pageStart = pageIndex * pageScale;
 			let pageEnd = (pageIndex+1) * pageScale;
 			if(pageEnd >= dataSpace.currentEquipshowing.length){
 				pageEnd = dataSpace.currentEquipshowing.length;
 			}
-			console.log("下一页,要展示的为"+pageStart+"~"+pageEnd);
-			 dataSpace.dataList=[]; 
-			 for(let index = pageStart ; index < pageEnd ; index++){
-				dataSpace.dataList.push(dataSpace.currentEquipshowing[index]);
-			} 		
-		}
-		//上一页,但位于第一页时调用将信息分页，自动写入第一页的datalist
-		function pageUp(){
-			if(pageIndex > 0 ){
-				pageIndex --;
-			}
-			let pageStart = pageIndex * pageScale;
-			let pageEnd = (pageIndex+1) * pageScale;
-			if(pageEnd >= dataSpace.currentEquipshowing.length){
-				pageEnd = dataSpace.currentEquipshowing.length;
-			}
-			console.log("上一页,要展示的为"+pageStart+"~"+pageEnd);
 			dataSpace.dataList=[]; 
 			for(let index = pageStart ; index < pageEnd ; index++){
 				dataSpace.dataList.push(dataSpace.currentEquipshowing[index]);
@@ -236,10 +255,9 @@ pageEncoding="UTF-8"%>
 					dataSpace.currentEquipshowing.push(dataSpace.totalEquip[i]);
 				}
 			}
-			pageUp();
+			refreshPage();
 		} 
-		
-		
+
 		/* Jquery作用域 */
 		$(function() {
 	 		
@@ -270,21 +288,21 @@ pageEncoding="UTF-8"%>
 				if($("#showState").prop("checked")==true){//展示全部
 						console.log("dafsdf"); 
 						dataSpace.currentEquipshowing = dataSpace.currentTotalEquip;
-						pageUp();
+						refreshPage();
 					}
 				else{//展示可用的
 						dataSpace.currentEquipshowing = dataSpace.usefulEquip;
-						pageUp();
+						refreshPage();
 					}
 			});
 			//分页
 			//下一页
 			$("#pageDown").click(function(){
-				pageDown()
+				refreshPage("down");
 			});
 			//上一页
 			$("#pageUp").click(function(){
-				pageUp()
+				refreshPage("up");
 			});
 			
 			//id搜索框
@@ -311,14 +329,18 @@ pageEncoding="UTF-8"%>
                 }	
                 else{
                 	dataSpace.currentEquipshowing = dataSpace.currentTotalEquip;
-                	pageUp();
+                	refreshPage();
                 	$('#equipID').val("器材ID");
                 }    
 	        }); 
 	        $("#addBtn").click(function(){
 				console.log("点击了添加")
 			});
-			
+
+
+	        $(function remove(el){
+				console.log("name"+el.name);
+			})
 		})
 		</script>
 		
@@ -360,15 +382,18 @@ pageEncoding="UTF-8"%>
 						<th>器材编号</th>
 						<th>器材种类</th>
 						<th>器材价格<th>
+						<th>操作</th>
 					</tr>
 				</thead>
 				<tbody>	
-					<tr ms-for="(key,data) in @dataList">
-						<td>{{key+1}}</td>
-						<td>{{data.id}}</td>
+					<tr ms-for="(index,data) in @dataList">
+						<td>{{index}}</td>
+						<td><input type="text" ms-duplex = data.id></td>
 						<td>{{data.type}}</td>
 						<td>{{data.price}}<td>
 						<td><input type = "checkbox" ms-duplex-checked="data.isSelect"  data-duplex-changed="@select" ></td>
+						<td><a href="javascript:void(0)" ms-click="@remove(data)">修改</a></td>
+						<td><a href="javascript:void(0)" ms-click="@remove(data)">删除</a></td>
 					</tr>
 					<tr>
 						<td></td>

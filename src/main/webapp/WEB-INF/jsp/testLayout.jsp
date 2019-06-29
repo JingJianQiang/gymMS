@@ -1,5 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 pageEncoding="UTF-8"%>
+<!DOCTYPE html> <html>
+ <head>
+ <title>购物车</title>
+ <meta http-equiv="Content-Type"
+ content="text/html; charset=UTF-8">
+ <meta http-equiv="X-UA-Compatible"
+ content="IE=edge" /> 
+        <script src="../../Avalon/avalon.js"></script>
+
+ 
+ </head>
 <!DOCTYPE html>
 <html>
 
@@ -16,8 +27,6 @@ pageEncoding="UTF-8"%>
 		<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.10/dist/js/bootstrap-select.min.js"></script>
         <script src="../../Avalon/avalon.js"></script>
-				
-		<script src="../JavaScript/PageOperator.js"></script>
     <script type="text/javascript" src="avalon.js"></script>
     <style type="text/css">
         body
@@ -48,6 +57,7 @@ pageEncoding="UTF-8"%>
             $id: "test",
             array: [
             ],
+            remove: function(){},
             trclick: function (el) {
                 if (!el.selected) {
                     if (validModel(items, model)) el.selected = true;
@@ -154,7 +164,7 @@ pageEncoding="UTF-8"%>
                 </tr>
             </thead>
             <tbody ms-repeat-el="array">
-                <tr ms-class="selected:el.selected" ms-if="el.selected" ms-click="@trclick(el)">
+                <tr ms-class="selected:el.selected" ms-if="el.selected" ms-click="trclick(el)">
                     <td>
                         <input type="text" ms-duplex="el.name.value" />
                         <span ms-class="hide:el.name.valid" style="color: red; font-size: 12px;">{{el.name.msg}}</span>
@@ -169,7 +179,7 @@ pageEncoding="UTF-8"%>
                     <td>{{el.name?el.name.value+"："+el.code.value:""}}   
                     </td>
                 </tr>
-                <tr ms-class="selected:el.selected" ms-if="!el.selected" ms-click="@trclick(el)">
+                <tr ms-class="selected:el.selected" ms-if="!el.selected" ms-click="trclick(el)">
                     <td>{{el.name.value}}
                     </td>
                     <td>{{el.code.value}}
@@ -184,4 +194,5 @@ pageEncoding="UTF-8"%>
         </table>
     </div>
 </body>
+</html>
 </html>

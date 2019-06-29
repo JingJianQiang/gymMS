@@ -88,9 +88,19 @@ public class EquipController {
 //	 获取器材编号及名称的map:id - euqipType中的
 	 @RequestMapping(value = "/query/typeMap", method = RequestMethod.GET)
 	 @ResponseBody
-	    public List<EquipType> equipQueryTypeAll() {
-	        return equipService.euqipTypeQueryAll();
-	    }
+    public List<EquipType> equipQueryTypeAll() {
+        return equipService.euqipTypeQueryAll();
+    }
+	 
+	 //delete操作
+	 //根据id删除器材
+	 @RequestMapping(value = "/delete/id")
+	 @ResponseBody
+	 public void equipDeleteByID( @RequestBody Map<String,Object> data) {
+		 int equipID = (int) data.get("equipID");
+		 equipService.equipDeleteByID(equipID);
+	 }
+	 
 	 
 }
 

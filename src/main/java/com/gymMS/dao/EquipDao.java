@@ -4,6 +4,7 @@ import com.gymMS.domain.EquipType;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
@@ -73,4 +74,10 @@ public interface EquipDao {
 	 */
 	@Update("update equip set EquipState = #{setState} where EquipID like #{equipID}")
 	void equipUpdateStateByID(@Param("equipID") int id , @Param("setState") Boolean state );
+	
+	/**
+	 * 以下为删除操作
+	 */
+	@Delete("delete from equip where EquipID like #{equipID}")
+	void equipDeleteByID(@Param("equipID") int euqipid);
 }
