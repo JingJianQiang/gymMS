@@ -29,20 +29,12 @@ public class EquipController {
 	@Autowired
 	private EquipService equipService;
 	
+//	select操作
 	@RequestMapping(value = "/query", method = RequestMethod.GET)
 	@ResponseBody
 	public List<Equip> data(){
 		return equipService.equipQueryAll();
 	}
-	
-	@RequestMapping(value = "/order", method = RequestMethod.POST)
-	@ResponseBody
-	public Boolean equipOrder( @RequestBody Map<String,Object> select)  {
-		System.out.println("ajax进来了,我选择了"+select.get("selectList"));
-//		ArrayList selectList = (ArrayList) select.get("selectList");
-		return true;
-	}
-	
 	
 	 @RequestMapping(value = "/query/state", method = RequestMethod.GET)
 	 @ResponseBody
@@ -50,26 +42,55 @@ public class EquipController {
 	        return equipService.equipQueryByState(false);
 	    }
 	 
-	 @RequestMapping(value = "/query/id", method = RequestMethod.GET)
+	 @RequestMapping(value = "/query/id", method = RequestMethod.POST)
 	 @ResponseBody
-	    public List<Equip> equipQueryByID() {
-	        return equipService.equipQueryByID(1);
+	    public List<Equip> equipQueryByID(@RequestBody Map<String,Object> data) {
+		 	int equipID = Integer.parseInt( (String)data.get("equipID"));
+		 	System.out.println("我要找id为"+ equipID);
+		 	System.out.println("我找到了id为"+ equipID+"的"+equipService.equipQueryByID(equipID));
+	        return equipService.equipQueryByID(equipID);
 	    }
 	 
-	 @RequestMapping(value = "/query/type", method = RequestMethod.GET)
+	 @RequestMapping(value = "/query/type", method = RequestMethod.POST)
 	 @ResponseBody
-	    public List<Equip> equipQueryByType() {
+	    public List<Equip> equipQueryByType(@RequestBody Map<String,Object> data) {
 		 	List<String> list = new ArrayList<String>();
-		 	list.add("篮球");
-		 	list.add("羽毛球");
-	        return equipService.equipQueryByType("篮球");
+		 	System.out.println("在接收你要查看的东西类型"+data.get("typeSelect"));
+		 	list=(List<String>) data.get("typeSelect");
+	        return equipService.equipQueryByType(list);
 	    }
 	 
-//	 获取器材编号及名称的map
+	/* @RequestMapping(value = "/query/stateByID", method = RequestMethod.GET)
+	 @ResponseBody
+	    public Boolean equipQueryStateByID(@RequestBody Map<String,Object> data) {
+		 	
+	        return equipService.equipQueryStateByID(2);
+	    }*/
+	 
+	 
+//	 	update操作
+//	 	预定器材
+		@RequestMapping(value = "/order", method = RequestMethod.POST)
+		@ResponseBody
+		public ArrayList<Integer> equipOrder( @RequestBody Map<String,Object> data)  {
+//			System.out.println("ajax进来了,我选择了"+data.get("selectList").getClass());	
+			ArrayList selectList = (ArrayList) data.get("selectList");	
+			return equipService.equipUpdateStateByID(selectList, true);
+		}
+		
+//		@RequestMapping(value = "/update", method = RequestMethod.GET)
+//		@ResponseBody
+//		public Boolean equipStateChange( ) {	
+//			equipService.equipUpdateStateByID(2, true);
+//			return true;
+//		}
+		
+//	 获取器材编号及名称的map:id - euqipType中的
 	 @RequestMapping(value = "/query/typeMap", method = RequestMethod.GET)
 	 @ResponseBody
 	    public List<EquipType> equipQueryTypeAll() {
 	        return equipService.euqipTypeQueryAll();
 	    }
+	 
 }
 

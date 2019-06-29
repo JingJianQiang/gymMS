@@ -9,3 +9,5 @@ function selectValue() {
 	alert($('#usertype').selectpicker('val'));
 }
 
+
+

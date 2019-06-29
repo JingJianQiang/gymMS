@@ -16,19 +16,33 @@ pageEncoding="UTF-8"%>
         <script src="../../Avalon/avalon.js"></script>
 				
 		<script src="../JavaScript/PageOperator.js"></script>
-		<script>		
+		
+		<!-- 
+		
+			VM 代码段
+		
+		 -->
+		<script>	
 		var dataSpace = avalon.define({
 			$id : "dataSpace",
-			dataList : {},
-			//selectList : [],
-			//查询
+			dataList : {},//展示的器材List
+			typeList : {},//查询出的种类List id-type Map
+			totalEquip : {},//所有器材
+			currentTotalEquip : {},//当前按条件查找出来的所有
+			currentEquipshowing :{},//将要画出来的全部
+			usefulEquip : {},//存放未被选中的器材
+			typeSelect :[],
+			//查询 查询之后的currentEquipshowing = totalEquip
 			query : function(){
 				$.ajax({
 					type:"get",
 					url:"/equip/query",
 					success : function (data){
-						console.log("success"+data);
-						dataSpace.dataList = data;
+						dataSpace.totalEquip = data;
+						dataSpace.currentEquipshowing = dataSpace.totalEquip;
+						dataSpace.currentTotalEquip = dataSpace.totalEquip;
+						equipClassify();
+						pageUp();
 					},
 					error:function( jqXHR, textStatus, errorThrown ){
 						console.log( jqXHR );
@@ -37,19 +51,58 @@ pageEncoding="UTF-8"%>
 					}
 				});//ajax
 			},
-			//勾选
-			select : function(e){
-				/*let i =0;
-				dataSpace.dataList.forEach(function(data){
-						dataSpace.selectList[i] = data.isSelect;
-						i++;
-					})
-					console.log(dataSpace.selectList);*/
+			queryByType : function(){	
+				console.log("我在dataSpace要查询这几个东西"+ dataSpace.typeSelect);
+				$.ajax({
+					type:"post",
+					url:"/equip/query/type",
+					data:JSON.stringify({
+						typeSelect : dataSpace.typeSelect
+						}),
+				    contentType: 'application/json;charset=utf-8',
+					success : function (data){
+						dataSpace.totalEquip = data;
+						dataSpace.currentEquipshowing = dataSpace.totalEquip;
+						dataSpace.currentTotalEquip = dataSpace.totalEquip;
+						equipClassify();
+						pageUp();
+					},
+					error:function( jqXHR, textStatus, errorThrown ){
+						console.log( jqXHR );
+						console.log( textStatus );
+						console.log( errorThrown );
+					}
+				});//ajax
+			},
+			 queryByID : function(id){
+				console.log("我要查询ID");
+				$.ajax({
+				type : "post",
+				url : "equip/query/id",
+				data : JSON.stringify({
+					equipID : id
+					}),
+				dataType : "json", 
+			    contentType: 'application/json;charset=utf-8',
+				success : function(data){
+					dataSpace.totalEquip = data;
+					dataSpace.currentEquipshowing = dataSpace.totalEquip;
+					dataSpace.currentTotalEquip = dataSpace.totalEquip;
+					equipClassify();
+					pageUp();
 				},
+				error:function( jqXHR, textStatus, errorThrown ){
+					console.log( jqXHR );
+					console.log( textStatus );
+					console.log( errorThrown );
+				}	
+				})//ajax
+			}, 
+
 			//租赁
 			order : function(){		
 				var selectData = [];
-				for(var i in dataSpace.dataList){
+				for(let i in dataSpace.dataList){//遍历出被勾选的
 					if(dataSpace.dataList[i].isSelect == true){
 						selectData.push(dataSpace.dataList[i].id);
 					}
@@ -60,12 +113,22 @@ pageEncoding="UTF-8"%>
 					url : "/equip/order",
 					data :  JSON.stringify({
 						selectList : selectData
-					}
-					),		
+					}),		
 					contentType: "application/json",				
 					dataType : "json", 
 					success : function(data){
-						console.log("success"+data);
+						if(data==""){//没后台数据，全部成功
+							dataSpace.query();
+						}
+						else{//接收后台数据，有失败的
+							let win = confirm("ID号为"+data+"已经被租用了");
+							if(win == true){
+								dataSpace.query();
+							}
+							else{
+								dataSpace.query();
+							}
+						}
 						},
 					error : function( jqXHR, textStatus, errorThrown ){
 						console.log( jqXHR );
@@ -73,7 +136,6 @@ pageEncoding="UTF-8"%>
 						console.log( errorThrown );
 					}
 				});//ajax
-				
 			},
 			//取消
 			cancel : function(){
@@ -81,16 +143,189 @@ pageEncoding="UTF-8"%>
 				dataSpace.dataList.forEach(function(data){
 					data.isSelect = false;
 					})	
-				}
+				},
+			//加载完成时查询所有器材id-类型名，并且显示在bootstrap-select下拉框中
+			queryType : function(){
+				$.ajax({
+					type:"get",
+					url:"/equip/query/typeMap",
+					success : function (data){
+						dataSpace.typeList = data;
+						for(let i  = 0; i < data.length; i++){
+				             $('.selectpicker').append("<option>" + data[i].name + "</option>");  
+							}
+						$('#usertype').selectpicker('refresh');  
+						$('#usertype').selectpicker('render');	 
+					},
+					error : function( jqXHR, textStatus, errorThrown ){
+						console.log( jqXHR );
+						console.log( textStatus );
+						console.log( errorThrown );
+					}
+				})//ajax
+			}
 		});//vm
-		/*dataSpace.$watch("selectList.length",function(){
-			console.log(dataSpace.selectList);
-			})*/
+		</script>
+		
+		<!-- 
+		
+			JavaScript 代码段
+			JQuery 代码段
+		
+		 -->
+		<script type="text/javascript">
+		/* javaScript作用域 */
+		var pageIndex = 0;	
+		var pageScale = 5;
+
+		//下一页
+		function pageDown(){
+			let pageMax = Math.ceil(dataSpace.currentEquipshowing.length / pageScale);
+			if( pageIndex < pageMax-1){
+				pageIndex ++;	
+			}
+			let pageStart = pageIndex * pageScale;
+			let pageEnd = (pageIndex+1) * pageScale;
+			if(pageEnd >= dataSpace.currentEquipshowing.length){
+				pageEnd = dataSpace.currentEquipshowing.length;
+			}
+			console.log("下一页,要展示的为"+pageStart+"~"+pageEnd);
+			 dataSpace.dataList=[]; 
+			 for(let index = pageStart ; index < pageEnd ; index++){
+				dataSpace.dataList.push(dataSpace.currentEquipshowing[index]);
+			} 		
+		}
+		//上一页,但位于第一页时调用将信息分页，自动写入第一页的datalist
+		function pageUp(){
+			if(pageIndex > 0 ){
+				pageIndex --;
+			}
+			let pageStart = pageIndex * pageScale;
+			let pageEnd = (pageIndex+1) * pageScale;
+			if(pageEnd >= dataSpace.currentEquipshowing.length){
+				pageEnd = dataSpace.currentEquipshowing.length;
+			}
+			console.log("上一页,要展示的为"+pageStart+"~"+pageEnd);
+			dataSpace.dataList=[]; 
+			for(let index = pageStart ; index < pageEnd ; index++){
+				dataSpace.dataList.push(dataSpace.currentEquipshowing[index]);
+			}	
+		}
+
+		//器材根据状态分类
+		 function equipClassify(){
+			dataSpace.usefulEquip = [];
+			for(let j =0 ; j < dataSpace.currentEquipshowing.length; j++){
+				let index = 0;
+				if(dataSpace.currentEquipshowing[j].isSelect == false){//未被选中，即可用的
+					dataSpace.usefulEquip.push( dataSpace.currentEquipshowing[j] );
+					index++;
+					//console.log("Tcyily"+dataSpace.dataList[j].type);
+				}
+			}
+			/* console.log("所有："+JSON.stringify(dataSpace.currentEquipshowing));
+			console.log("可用的有："+JSON.stringify(dataSpace.usefulEquip)); */
+		} 
+		//
+	 	//正则表达式匹配本地数据
+		function regaxpID( id ){
+			let reg = eval("/"+id+"/")
+			dataSpace.currentEquipshowing = [];
+			for(let i = 0 ; i < dataSpace.totalEquip.length; i++){
+				if(reg.test(dataSpace.totalEquip[i].id)){
+					dataSpace.currentEquipshowing.push(dataSpace.totalEquip[i]);
+				}
+			}
+			pageUp();
+		} 
+		
+		
+		/* Jquery作用域 */
+		$(function() {
+	 		
+			//加载完后显示所有可以选择的器材种类
+			function onLoad(){
+				$("#showState").prop("checked",true);
+				$("#equipID").val("器材ID");
+				dataSpace.query();
+				dataSpace.queryType();
+			}
+			window.onload = onLoad();
+			
+
+			//点击查询时判断查询方式
+			$("#queryBtn").click(function(){
+				dataSpace.typeSelect = $('#usertype').selectpicker('val');				
+				if(dataSpace.typeSelect != null){
+					dataSpace.queryByType();
+					}
+				else {
+					dataSpace.query();
+				}
+				$("#showState").prop("checked",true);
+			});
+
+			//切换只显示可用
+			$("#showState").click(function(){
+				if($("#showState").prop("checked")==true){//展示全部
+						console.log("dafsdf"); 
+						dataSpace.currentEquipshowing = dataSpace.currentTotalEquip;
+						pageUp();
+					}
+				else{//展示可用的
+						dataSpace.currentEquipshowing = dataSpace.usefulEquip;
+						pageUp();
+					}
+			});
+			//分页
+			//下一页
+			$("#pageDown").click(function(){
+				pageDown()
+			});
+			//上一页
+			$("#pageUp").click(function(){
+				pageUp()
+			});
+			
+			//id搜索框
+			/*  $('#equipID').bind('keydown', function (event) {
+	            var event = window.event || arguments.callee.caller.arguments[0];
+	            if (event.keyCode == 13){
+	            	let equipID = $('#equipID').val();
+	                if(/^[0-9]+$/.test( equipID )){
+	                	dataSpace.queryByID( equipID );
+	                }
+	                else{
+	                	dataSpace.query();
+	                }
+	            }
+	        });*/
+	        $("#equipID").focus('leave', function(event){
+	        	 $('#equipID').val("");
+		        })
+			 $("#equipID").blur('leave', function (event) {
+	            let equipID = $('#equipID').val();
+                if(/^[0-9]+$/.test( equipID )){
+                	regaxpID(equipID);    
+                	$('#equipID').val("查询中");
+                }	
+                else{
+                	dataSpace.currentEquipshowing = dataSpace.currentTotalEquip;
+                	pageUp();
+                	$('#equipID').val("器材ID");
+                }    
+	        }); 
+	        $("#addBtn").click(function(){
+				console.log("点击了添加")
+			});
+			
+		})
 		</script>
 		
    </head>
    <body ms-controller="dataSpace">      
    <div class="container">
+  	<button type="button" id = "addBtn" class="btn btn-default" >增加</button>
 	<div class="row clearfix">
 		<div class="col-md-2 column">
 		</div>
@@ -99,28 +334,37 @@ pageEncoding="UTF-8"%>
 				器材管理系统
 			</h2>
 			<div class="row clearfix">
-				<div class="col-md-8 column" >
-			 	<select id="usertype" name="usertype" class="selectpicker show-tick form-control" multiple data-max-options="3" data-live-search="true">
-					<option value="0" >苹果</option>
-					<option value="1" >菠萝</option>
-					<option value="2" >香蕉</option>
-					<option value="3" >火龙果</option>
-				</select>
+				<div class="col-md-1 column" >
+				 	&nbsp;&nbsp;
+			 		<input type="checkbox" id="showState" />
+			 		<label style="font-weight:110;font-size:62%;style="vertical-align:middle">显示全部</label>		
+				</div> 
+				<div class="col-md-4 column" >
+				 	<select id="usertype" name="usertype" class="selectpicker show-tick form-control" 
+				 			multiple data-max-options="3" data-live-search="true">
+					</select>
 				</div>
+			 	<div class="col-md-2 column">
+			 		<input type="equipID" class="form-control" id="equipID" value="器材ID"   onfocus="if(value=='器材ID'){value=''}" onblur="if(value==''){value='器材ID'}"/>
+				</div> 
+				<div class="col-md-1 column" >
+				</div> 
 				<div class="col-md-4 column">
-					 <button type="button" class="btn btn-default"  ms-click = "@query">查询</button>
+					 <button type="button" id = "queryBtn" class="btn btn-default"  >查询</button>
 				</div>
 			</div>
 			<table class="table">
 				<thead>
 					<tr>
+						<th>序号</th>
+						<th>器材编号</th>
 						<th>器材种类</th>
-						<th>场地种类</th>
 						<th>器材价格<th>
 					</tr>
 				</thead>
 				<tbody>	
-					<tr ms-for="data in @dataList">
+					<tr ms-for="(key,data) in @dataList">
+						<td>{{key+1}}</td>
 						<td>{{data.id}}</td>
 						<td>{{data.type}}</td>
 						<td>{{data.price}}<td>
@@ -130,8 +374,8 @@ pageEncoding="UTF-8"%>
 						<td></td>
 						<td></td>
 						<td></td>
-						<td><a href="">屠龙宝刀</a></td>
-						<td><a href="">点击就送</a></td>
+						<td><button type="button" id = "pageUp" class="btn btn-default"  >上一页</button></td>
+						<td><button type="button" id = "pageDown" class="btn btn-default"  >下一页</button></td>
 					</tr>
 				</tbody>
 			</table>
