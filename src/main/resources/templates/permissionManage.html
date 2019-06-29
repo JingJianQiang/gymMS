@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>permissionManage</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}"/>
+</head>
+<body>   
+<div style="width:70%;margin:50px auto;">
+    <table class="layui-table" lay-size="lg"  lay-even="nob" lay-skin="line">
+	  <thead>
+        <tr>
+            <th>序号</th>
+            <th>角色</th>
+            <th>描述</th>
+            <th>权限</th>
+            <th>编辑</th>
+            <th>删除</th>
+        </tr>
+      </thead>
+        <tr th:each="rp: ${role_permission}">
+	        <td th:text="${rp.key.role_id}"></td>
+	        <td th:text="${rp.key.role_name}"></td>
+	        <td th:text="${rp.key.description}"></td>
+	        <td th:text="${rp.value}" th:if="not ${#arrays.isEmpty(rp.value)}"></td>
+	        <td th:text="无授权权限" th:if="${#arrays.isEmpty(rp.value)}"></td>
+	       <td><a th:href="@{/editPermission(role_id=${rp.key.role_id})}" class="layui-btn layui-btn-sm layui-btn-normal">编辑</a></td>
+           <td>
+	            <a th:if="not ${#arrays.isEmpty(rp.value)}" th:href="@{/deletePermission(role_id=${rp.key.role_id})}" class="layui-btn layui-btn-sm layui-btn-danger">删除</a>
+	            <a th:if="${#arrays.isEmpty(rp.value)}" th:href="@{/deletePermission(roel_id=${rp.key.role_id})}" class="layui-btn layui-btn-sm layui-btn-disabled">删除</a>
+            </td>
+    	</tr>    
+    </table>
+    <br/>
+    <div style="text-align: center"> 
+            <a th:href="@{/permissionManage(start=0)}" class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-prev"></i></a>
+            <a th:href="@{/permissionManage(start=${page.pageNum-1})}" class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-left"></i></a>
+            <a th:href="@{/permissionManage(start=${page.pageNum+1})}" class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-right"></i></a>
+            <a th:href="@{/permissionManage(start=${page.lastPage})}" class="layui-btn layui-btn-radius layui-btn-primary"><i class="layui-icon layui-icon-next"></i></a>
+    </div>
+</div>
+
+</body>
+</html>
