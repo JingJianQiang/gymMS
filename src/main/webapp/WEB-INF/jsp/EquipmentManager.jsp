@@ -33,12 +33,6 @@ pageEncoding="UTF-8"%>
 			usefulEquip : {},//存放未被选中的器材
 			typeSelect :[],
 			remove : function(el){
-/* 				console.log(el.type);	
-				dataSpace.dataList.remove(el);
-				dataSpace.totalEquip.remove(el);
-				dataSpace.currentEquipshowing.remove(el);
-				dataSpace.usefulEquip.remove(el); 	
-				refreshPage();*/
 				 $.ajax({
 					type:"post",
 					url:"/equip/delete/id",
@@ -62,6 +56,15 @@ pageEncoding="UTF-8"%>
 					})//ajax  
 				},
 				update : function(el){
+					if(!/^[0-9]+$/.test(el.price) ){
+						let win = confirm("价格必须为数字");
+						return ;
+						
+					}
+					else if(el.type == "" || el.type == null){
+						let win = confirm("类型不能为空");
+						return ;
+						}
 					$.ajax({
 					type:"post",
 					url:"/equip/update",
@@ -73,6 +76,7 @@ pageEncoding="UTF-8"%>
 						}),
 					contentType: 'application/json;charset=utf-8',
 					success : function(){
+						let win = confirm("id为"+el.id+"器材修改成功");
 						},
 					error:function( jqXHR, textStatus, errorThrown ){
 						console.log( jqXHR );
@@ -411,7 +415,6 @@ pageEncoding="UTF-8"%>
 					<tr ms-for="(index,data) in @dataList">
 						<td>{{index}}</td>
 						<td>{{data.id}}</td>
-						
 						<td>
 						<input type="text" class="form-control" id="exampleInput1" ms-duplex = data.type /> 
 						</td>
