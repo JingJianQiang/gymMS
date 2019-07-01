@@ -60,6 +60,7 @@ public class LoginController {
     		HttpSession session=request.getSession();
     		session.setAttribute("user_account",user.getUser_account());
     		session.setAttribute("role_id",role_id);
+    		session.setAttribute("user_name", user.getUser_name());
     		return "ManageHome";
     	} 
     	
