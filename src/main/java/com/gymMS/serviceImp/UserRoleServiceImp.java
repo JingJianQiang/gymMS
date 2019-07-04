@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.gymMS.dao.RoleMapper;
 import com.gymMS.dao.UserRoleMapper;
-import com.gymMS.pojo.Role;
+
 import com.gymMS.pojo.UserRole;
 import com.gymMS.service.UserRoleService;
 

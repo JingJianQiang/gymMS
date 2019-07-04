@@ -1,6 +1,5 @@
 package com.gymMS.dao;
 
-import java.lang.reflect.Array;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;

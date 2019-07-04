@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gymMS.dao.PermissionMapper;
-import com.gymMS.dao.RoleMapper;
+
 import com.gymMS.dao.RolePermissionMapper;
 import com.gymMS.pojo.Permission;
 import com.gymMS.pojo.Role;
