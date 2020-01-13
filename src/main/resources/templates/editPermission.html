@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>EditPermission</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}"/>
+</head>
+<body>
+<div style="width:40%;margin:150px auto;">
+	<form action="updatePermission" class="layui-form layui-form-pane" method="post">  
+		<div class="layui-form-item">
+			<input name="role_id" type="hidden" th:value="${role.role_id}"/>
+	        <label class="layui-form-label layui-bg-gray">角色名</label>
+	        <div class="layui-input-inline">
+	           <label class="layui-form-label" style="text-align:left;width:190px" th:text="${role.role_name}"></label>
+	        </div>
+	     </div>
+	     <div class="layui-form-item">
+	         <label class="layui-form-label">权限</label>
+    			<div class="layui-input-block">
+			        <input type ="checkbox" name="permission_name"
+						th:each ="p : ${permission}"
+						th:value="${p.permission_name}"
+						th:title="${p.permission_name}"
+						th:attr ="checked=${ps.containsAll(p.permission_name)?true:false}"
+						/>
+	        </div>
+	     </div>
+	     <div class="layui-form-item">
+	        <div class="layui-input-block">
+	           <button  class="layui-btn" type="submit">提交</button>
+	           <button class="layui-btn layui-btn-primary">取消</button>
+	        </div>
+	     </div>
+     </form>
+</div>
+
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script>
+//JavaScript代码区域
+layui.use('form', function(){
+  var form = layui.form;
+});
+
+
+</script>
+</body>
+</html>

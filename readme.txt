@@ -1,4 +1,7 @@
-#项目为体育馆管理系统
+项目为体育馆管理系统
+项目框架 springboot+mybatis
+数据库  mysql
+
 
 后台启动
 http://127.0.0.1:8080/gymMS/loginPage
@@ -24,7 +27,4 @@ gymMS
        |---target
        |---pom.xml
        |---readme.txt
-       
-       
- 
-      
+

@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>EditUser</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}"/>
+</head>
+<body>
+<div style="width:30%;margin:150px auto;">
+	<form action="updateById" class="layui-form layui-form-pane" method="post">  
+		<div class="layui-form-item">
+			<input name="user_id" type="hidden" th:value="${user.user_id}"/>
+	        <label class="layui-form-label layui-bg-gray">用户名</label>
+	        <div class="layui-input-inline">
+	            <input id="username" name="user_name" th:value="${user.user_name}" autocomplete="off" class="layui-input"/>
+	        </div>
+	     </div>
+	     <div class="layui-form-item">
+	        <label class="layui-form-label layui-bg-gray">手&nbsp;&nbsp;机</label>
+	        <div class="layui-input-inline">
+	            <input id="phone" name="phone" th:value="${user.phone}"  autocomplete="off" class="layui-input"/>
+	        </div>
+	     </div>
+	     <div class="layui-form-item">
+	        <div class="layui-input-block">
+	           <button  class="layui-btn" type="submit">提交</button>
+	           <button class="layui-btn layui-btn-primary" onclick="javascript:history.go(-1);">取消</button>
+	        </div>
+	     </div>
+     </form>
+</div>
+</body>
+</html>

@@ -74,13 +74,19 @@
             <version>4.1.6</version>
         </dependency>
         
-        <!-- thymeleaf -->
+        
+		<!-- thymeleaf -->
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
-
-    </dependencies>
+		
+		<dependency>
+		    <groupId>org.thymeleaf.extras</groupId>
+		    <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+		    <version>3.0.4.RELEASE</version>
+		</dependency>
+		
  
     <properties>
         <java.version>1.8</java.version>

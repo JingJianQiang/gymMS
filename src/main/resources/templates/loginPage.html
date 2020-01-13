@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8"/>
+  	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  	<link rel="stylesheet"  type="text/css" th:href="@{/layui/css/layui.css}"/>
+    <title>loginPage</title>
+
+</head>
+<body style="width: 100%;height:auto;background-size: 100%;">
+	
+    <div class="layui-container" style="height: 100%">
+      <fieldset class="layui-elem-field layui-field-title" style="margin-top: 6%">
+          <legend style="margin-left: 40%"><span style="font-weight: bold;font-size:22px;">后台管理系统——登录</span></legend>
+      </fieldset>
+      <div class="layui-row">
+       	<div class="grid-demo">
+           <form id="useLogin" class="layui-form" action="login" method="post">
+               <div class="layui-form-item">
+                  <label class="layui-form-label">账号</label>
+                  <div class="layui-input-inline">
+                      <input id="useraccount" name="user_account" placeholder="请输入用户名" lay-verify="required" autocomplete="off" class="layui-input" type="text"/>
+                  </div>
+               </div>
+               <div class="layui-form-item">
+                  <label class="layui-form-label">密&nbsp;&nbsp;码</label>
+                  <div class="layui-input-inline">
+                      <input id="password" name="user_password"  placeholder="请输入密码" lay-verify="required" autocomplete="off" class="layui-input" type="password"/>
+                  </div>
+               </div>
+               <div class="layui-form-item">
+                  <div class="layui-input-block">
+                     <button id="loginBtn" class="layui-btn" type="submit">登录</button>
+                     <button class="layui-btn layui-btn-primary" type="reset">重置</button>
+                  </div>
+               </div>
+           </form>
+      </div>
+   </div>
+      <label class="layui-form-label" style="text-align:center;width:190px" th:text="${msg}"></label>
+      <a class="layui-btn layui-btn-primary" th:href="@{/registerPage}" >注册</a>
+</div>
+
+
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script>
+//JavaScript代码区域
+layui.use('element', function(){
+  var element = layui.element;
+});
+</script>
+
+</body>
+</html>
